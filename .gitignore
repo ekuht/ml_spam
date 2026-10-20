@@ -1,0 +1,20 @@
+# Personal emails and raw corpora — do not commit
+*.zip
+*.tar
+*.tar.xz
+spam_combined_clean.csv
+test_spam_predictions.csv
+lingspam/
+spamassassin/
+test_task_emails/
+spam_project/
+test_spam/
+# Local working files
+.venv/
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.env
+*.pem
+*.key

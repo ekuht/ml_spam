@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Демо — классификация спама</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:#1e293b;background:#f5f7fa}
+*{box-sizing:border-box}body{margin:0;padding:42px 16px}main{max-width:700px;margin:0 auto;background:white;border:1px solid #e2e8f0;border-radius:14px;padding:30px;box-shadow:0 8px 30px #0f172a0d}
+h1{font-size:25px;margin:0 0 6px}p{color:#64748b;margin:0 0 22px}label{display:block;margin-bottom:8px;font-weight:600}textarea{display:block;width:100%;min-height:170px;resize:vertical;border:1px solid #cbd5e1;border-radius:8px;padding:13px;font:inherit;line-height:1.45}textarea:focus{outline:2px solid #93c5fd}button{background:#1d4ed8;color:#fff;border:0;border-radius:8px;padding:12px 18px;margin-top:15px;font:inherit;font-weight:600;cursor:pointer}button:disabled{opacity:.6;cursor:wait}#result{margin-top:20px;padding:15px;border-radius:8px;display:none;background:#f1f5f9}#result.spam{background:#fef2f2;color:#991b1b}#result.ham{background:#f0fdf4;color:#166534}small{display:block;margin-top:16px;color:#64748b}a{color:#1d4ed8}
+</style></head><body><main>
+<h1>Проверка письма на спам</h1><p>Модель машинного обучения: TF-IDF + LinearSVC с калибровкой вероятностей.</p>
+<form id="form"><label for="email">Текст письма</label>
+<textarea id="email" required maxlength="100000" placeholder="Вставьте сюда текст письма..."></textarea>
+<button id="check" type="submit">Проверить письмо</button></form>
+<div id="result" role="status" aria-live="polite"></div>
+<small>API для проверки: <a href="/docs">/docs</a> · Состояние сервиса: <a href="/health">/health</a></small>
+</main><script>
+const form=document.querySelector('#form'),text=document.querySelector('#email'),btn=document.querySelector('#check'),res=document.querySelector('#result');
+form.addEventListener('submit',async e=>{e.preventDefault();btn.disabled=true;res.style.display='block';res.className='';res.textContent='Проверка...';
+try{const response=await fetch('/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.value})});
+const data=await response.json();if(!response.ok)throw new Error(data.detail||'Ошибка API');
+res.className=data.label==='spam'?'spam':'ham';res.textContent=(data.label==='spam'?'Результат: СПАМ':'Результат: НЕ СПАМ')+' · Вероятность спама: '+(data.spam_probability*100).toFixed(1)+'%';
+}catch(err){res.textContent='Ошибка: '+err.message}finally{btn.disabled=false}});
+</script></body></html>
